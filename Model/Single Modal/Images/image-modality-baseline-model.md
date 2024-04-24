@@ -41,7 +41,7 @@ This script is structured to be highly modular, suitable for various deep learni
 - It heavily utilizes command-line arguments for configuration, making it flexible for batch processing and automation in research environments.
 
 
-## Each class
+## Each class and functionality
 
 
 ### ForecastingDataset Class
@@ -103,3 +103,38 @@ The `create_data_loaders` function is designed to automate the process of settin
 
 This function streamlines the process of preparing data for machine learning models in PyTorch, ensuring that data is appropriately shuffled, batched, and transformed as required. It is especially useful for projects where data management and efficient loading are crucial for model performance and evaluation.
 
+### train_model Function
+
+The `train_model` function orchestrates the training process for a PyTorch model, utilizing both a training set and a validation set to evaluate model performance across epochs. This function is designed to handle gradient accumulation, a technique useful for effectively managing memory on hardware with limited capacity.
+
+#### Function Signature: 
+`train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, grad_accumulation_steps=1)`
+
+#### Parameters:
+- `model`: The PyTorch model to be trained.
+- `train_loader`: DataLoader containing the training dataset.
+- `val_loader`: DataLoader containing the validation dataset.
+- `criterion`: The loss function used to evaluate a model's predictions against the true values.
+- `optimizer`: The optimization algorithm used to update the model's weights.
+- `num_epochs`: The number of times to iterate over the entire training dataset.
+- `grad_accumulation_steps`: The number of forward/backward passes to accumulate gradients before performing a single optimization step. This parameter is crucial for handling large models or batches that would otherwise consume too much memory.
+
+#### Functionality:
+- **Device Setup**:
+  - Determines the appropriate device (MPS, CUDA, or CPU) depending on availability, ensuring optimal model training performance.
+- **Training Loop**:
+  - Iterates over the number of epochs, each time passing through the entire training dataset.
+  - For each batch of data:
+    - Performs a forward pass to compute the loss.
+    - Scales the loss according to the number of gradient accumulation steps.
+    - Conducts a backward pass to compute gradients.
+    - Updates the model weights conditionally after a specified number of accumulation steps, then resets gradients to zero.
+  - Calculates and logs the training loss after each epoch.
+- **Validation Phase**:
+  - Evaluates the model on the validation dataset without updating model weights, which helps in monitoring overfitting during training.
+  - Computes and logs the validation loss.
+
+#### Return Value:
+- Returns the trained model, allowing further analysis or additional training if necessary.
+
+This function is key for implementing effective training routines in PyTorch, particularly when dealing with large datasets or models that require careful memory management. It ensures that the model learns effectively from the training data while monitoring its performance on unseen validation data.
