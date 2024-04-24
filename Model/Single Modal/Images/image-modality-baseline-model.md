@@ -73,3 +73,33 @@ The `ForecastingDataset` class is designed as a custom dataset handler for PyTor
 - **Functionality:** Adjusts the distribution of sequences to meet a specific count (`target_samples`), either by oversampling (with replacement) or undersampling (without replacement), based on the availability of sequences relative to the target.
 
 This class serves as a versatile tool for preparing datasets of image sequences for machine learning models in PyTorch, especially in scenarios where sequential data processing is crucial, such as video analysis or temporal image data prediction.
+
+### create_data_loaders Function
+
+The `create_data_loaders` function is designed to automate the process of setting up PyTorch `DataLoader`s for training, validation, and testing. This function handles the splitting of image data into appropriate subsets and ensures that each subset is loaded with a specified batch size and optional transformations.
+
+#### Function Signature: 
+`create_data_loaders(data_dir, batch_size, train_val_test_split=(0.7, 0.2, 0.1), transform=None)`
+
+#### Parameters:
+- `data_dir`: String specifying the directory containing image files.
+- `batch_size`: Integer defining the number of images per batch in the data loaders.
+- `train_val_test_split`: Tuple indicating the proportion of data to be used for training, validation, and testing respectively.
+- `transform`: Optional callable that applies transformations to the images (e.g., resizing, normalization).
+
+#### Functionality:
+- **Data Collection**:
+  - Collects paths for all `.png` files located in the specified `data_dir`.
+- **Data Splitting**:
+  - Initially splits the image paths into training and combined validation/testing sets based on the training set size specified in `train_val_test_split[0]`.
+  - Further splits the combined validation/testing set into validation and testing sets. The size of the validation set is determined by the relative proportions of validation and testing sizes provided in `train_val_test_split`.
+- **Dataset Creation**:
+  - Instantiates `PNGDataset` objects for training, validation, and testing datasets. Each dataset is initialized with its respective image paths and the provided transformation (if any).
+- **DataLoader Setup**:
+  - Initializes `DataLoader` objects for the training, validation, and testing datasets. The training loader is set to shuffle the data to ensure random distribution during training, while the validation and testing loaders do not shuffle data.
+
+#### Return Value:
+- Returns a tuple containing the training, validation, and testing `DataLoader`s.
+
+This function streamlines the process of preparing data for machine learning models in PyTorch, ensuring that data is appropriately shuffled, batched, and transformed as required. It is especially useful for projects where data management and efficient loading are crucial for model performance and evaluation.
+
